@@ -1,2 +1,13 @@
-# A-star-visualization
-The script visualizes A* path search algorithm in Pygame.
+# Visualization of A* path search algorithm
+
+![A* screenshot](/screenshot.png)
+
+## Authors
+
+**Andrei Ermishin**
+
+## License
+
+See [LICENSE](LICENSE) for more information.
+
+Copyright 2020 © Andrei Ermishin
