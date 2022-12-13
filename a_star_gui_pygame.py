@@ -1,12 +1,12 @@
 """ GUI class for 'a_star_visualization.py'. """
 
 
-__author__ = "Andrei Ermishin"
+__author__ = "Andrey Ermishin"
 __copyright__ = "Copyright (c) 2020"
 __credits__ = []
 __license__ = "GNU GPLv3"
 __version__ = "1.0.0"
-__maintainer__ = "Andrei Ermishin"
+__maintainer__ = "Andrey Ermishin"
 __email__ = "andrey.yermishin@gmail.com"
 __status__ = "Production"
 
@@ -183,18 +183,31 @@ class AstarGUI:
     
     def search_simulation(self):
         """ Start iterative simulation of A* search. """
-        ### some nice peace of code here:
-        only_author_has = 1
-        real_code = only_author_has
+        # Start simulation:
+        if not self.sim_running and self.start_pos and self.end_pos:
+            self.clear_search()
+            self.simulation.is_over = False
+            self.simulation.add_cell(self.start_pos)
+            pygame.time.set_timer(timer_play_sim, TIMER_DELAY)
+            self.sim_running = True
+        # Stop:
+        elif self.sim_running:
+            self.sim_running = False
+            pygame.time.set_timer(timer_play_sim, TIMER_STOP)
     
     def play_sim(self):
         """ Execute one iteration of A* search algorithm and fill the grid. """
         if not self.simulation.is_over:
             self.simulation.a_star_search_iter(self.start_pos, self.end_pos)
         else:
-            ### some nice peace of code here:
-            only_author_has = 1
-            real_code = only_author_has
+            if not self.path:
+                self.path = self.simulation.reconstruct_path(self.end_pos)[1:-1]
+            row, col = self.path.pop(0)
+            self.simulation.set_value(row, col, PATH)
+
+            if len(self.path) == 0:
+                self.sim_running = False
+                pygame.time.set_timer(timer_play_sim, TIMER_STOP)
                     
 
     def set_type(self, item_type):
