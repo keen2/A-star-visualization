@@ -1,12 +1,12 @@
 """ The script visualizes A* path search algorithm in Pygame. """
 
 
-__author__ = "Andrei Ermishin"
+__author__ = "Andrey Ermishin"
 __copyright__ = "Copyright (c) 2020"
 __credits__ = []
 __license__ = "GNU GPLv3"
 __version__ = "1.0.0"
-__maintainer__ = "Andrei Ermishin"
+__maintainer__ = "Andrey Ermishin"
 __email__ = "andrey.yermishin@gmail.com"
 __status__ = "Production"
 
@@ -91,10 +91,13 @@ class Grid:
         Return horiz/vert and diagonal neighbors of the cell (row, col).
         """
         ans = []
-        ### some nice peace of code here:
-        only_author_has = 1
-        real_code = only_author_has
-        return list(range(8))
+        for row_offset in range(-1, 2):
+            for col_offset in range(-1, 2):
+                i = row + row_offset
+                j = col + col_offset
+                if 0<=i<self.height and 0<=j<self.width and (i, j)!=(row, col):
+                    ans.append((i, j))
+        return ans
     
     def get_index(self, point, cell_size):
         """ Return index of a cell by its screen coordinates. """
@@ -158,9 +161,14 @@ class Astar(Grid):
     def add_cell(self, cell, priority=0):
         """ Add a new cell or update min priority of an existing cell. """
         new_cell_better = False
-        ### some nice peace of code here:
-        only_author_has = 1
-        real_code = only_author_has
+        if cell in self.entries and priority < self.entries[cell][0]:
+            new_cell_better = True
+            self.remove_cell(cell)
+        if cell not in self.entries or new_cell_better:
+            entry = [priority, self.count, cell]
+            self.entries[cell] = entry
+            heapq.heappush(self.p_queue, entry) # enqueue pointer to a list
+            self.count += 1
 
     def remove_cell(self, cell):
         """
@@ -212,9 +220,39 @@ class Astar(Grid):
                     h_x = np.hypot(end_pos[0] - neighbor[0],
                                    end_pos[1] - neighbor[1])
                     cost = g_x + h_x
-                    ### some nice peace of code here:
-                    only_author_has = 1
-                    real_code = only_author_has
+                    self.add_cell(neighbor, cost)
+                    self.came_from[neighbor] = cur_cell
+                    self.set_value(neighbor[0], neighbor[1], SEARCH)
+    
+    def a_star_search(self, start_pos, end_pos):
+        """
+        The algorithm minimizes the sum of cost of the path 
+        from start position to current position (g(x)) and 
+        heuristic function h(x) that estimates cost of the cheapest 
+        path from current to the end position (Euclidean distance).
+        Algorithm uses min priority queue with entries like: 
+        [priority, count, cell].
+        Return/make a list of grid cells forming a path from start to end.
+        """
+        self.add_cell(start_pos)
+        
+        while self.p_queue:
+            cur_cell = self.pop_cell()
+            for neighbor in self.eight_neighbors(*cur_cell):
+                if neighbor == end_pos:
+                    self.came_from[neighbor] = cur_cell
+                    path = self.reconstruct_path(neighbor)
+                    for cell in path[1:-1]:
+                        self.set_value(cell[0], cell[1], PATH)
+                    return
+                elif self.is_empty(*neighbor):
+                    g_x = len(self.reconstruct_path(cur_cell))
+                    h_x = np.hypot(end_pos[0] - neighbor[0],
+                                   end_pos[1] - neighbor[1])
+                    cost = g_x + h_x
+                    self.add_cell(neighbor, cost)
+                    self.came_from[neighbor] = cur_cell
+                    self.set_value(neighbor[0], neighbor[1], SEARCH)
 
 
 # (y, x)
