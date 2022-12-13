@@ -4,10 +4,10 @@
 
 ## Authors
 
-**Andrei Ermishin**
+**Andrey Ermishin**
 
 ## License
 
 See [LICENSE](LICENSE) for more information.
 
-Copyright 2020 © Andrei Ermishin
+Copyright 2020 © Andrey Ermishin
